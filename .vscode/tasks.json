@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/CogitoErgoSudokum.csproj",
+                "${workspaceFolder}/src/CogitoErgoSudokum.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/CogitoErgoSudokum.csproj",
+                "${workspaceFolder}/src/CogitoErgoSudokum.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/CogitoErgoSudokum.csproj"
+                "${workspaceFolder}/src/CogitoErgoSudokum.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

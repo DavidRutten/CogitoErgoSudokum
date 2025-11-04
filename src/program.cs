@@ -1,7 +1,6 @@
-using System;
 using System.Runtime.InteropServices;
 
-namespace MyApp
+namespace CogitoErgoSudokum
 {
   class Program
   {
@@ -25,38 +24,23 @@ namespace MyApp
       // U: undo?
       // Q: quit
 
-      // Create a SudokuGrid class. Each cell has a bitmask showing which digits are stil available
-      // and whether or not the singular digit has been manually set.
+      var grid = new Grid();
+      grid = grid.WithDigits(
+        (1, 1, Digit.CreateAssigned(3)),
+        (1, 4, Digit.CreateAssigned(4)),
+        (2, 3, Digit.CreateAssigned(9)),
+        (4, 2, Digit.CreateAssigned(7)),
+        (4, 9, Digit.CreateAssigned(5)),
+        (5, 5, Digit.CreateAssigned(1)),
+        (7, 6, Digit.CreateAssigned(2)),
+        (8, 6, Digit.CreateAssigned(8))
+      );
 
-      // how do I signal plurality per cell?
-      // Don't seem to be good dot patterns for 3x3.
-      /*
-          ┏━━━┯━━━┯━━━┳━━━┯━━━┯━━━┳━━━┯━━━┯━━━┓
-          ┃ 1 │ 2 │ 3 ┃ 4 │ 5 │ 6 ┃ 7 │ 8 │ 9 ┃
-          ┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
-          ┃ 1 │ 2 │ 3 ┃ 4 │ 5 │ 6 ┃ 7 │ 8 │ 9 ┃
-          ┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
-          ┃ 1 │ 2 │ 3 ┃ 4 │ 5 │ 6 ┃ 7 │ 8 │ 9 ┃
-          ┣━━━┿━━━┿━━━╋━━━┿━━━┿━━━╋━━━┿━━━┿━━━┫
-          ┃ 1 │ 2 │ 3 ┃ 4 │ 5 │ 6 ┃ 7 │ 8 │ 9 ┃
-          ┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
-          ┃ 1 │ 2 │ 3 ┃ 4 │ 5 │ 6 ┃ 7 │ 8 │ 9 ┃
-          ┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
-          ┃ 1 │ 2 │ 3 ┃ 4 │ 5 │ 6 ┃ 7 │ 8 │ 9 ┃
-          ┣━━━┿━━━┿━━━╋━━━┿━━━┿━━━╋━━━┿━━━┿━━━┫
-          ┃ 1 │ 2 │ 3 ┃ 4 │ 5 │ 6 ┃ 7 │ 8 │ 9 ┃
-          ┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
-          ┃ 1 │ 2 │ 3 ┃ 4 │ 5 │ 6 ┃ 7 │ 8 │ 9 ┃
-          ┠───┼───┼───╂───┼───┼───╂───┼───┼───┨
-          ┃ 1 │ 2 │ 3 ┃ 4 │ 5 │ 6 ┃ 7 │ 8 │ 9 ┃
-          ┗━━━┷━━━┷━━━┻━━━┷━━━┷━━━┻━━━┷━━━┷━━━┛
+      Console.Write(grid.ToString());
 
-      */
       Console.WriteLine("Press any key to stop.");
       Console.ReadKey();
     }
-
-
 
     static string GetOperatingSystem()
     {
