@@ -1,6 +1,3 @@
-
-using System.Data.Common;
-using System.IO.Pipes;
 using System.Text;
 
 namespace CogitoErgoSudokum
@@ -269,6 +266,106 @@ namespace CogitoErgoSudokum
       sb.AppendLine(lower);
 
       return sb.ToString();
+
+      /*
+      ┏━━━━━┯━━━━━┯━━━━━┳━━━━━┯━━━━━┯━━━━━┳━━━━━┯━━━━━┯━━━━━┓
+      ┃  1  │  2  │  3  ┃  4  │  5  │  6  ┃  7  │  8  │  9  ┃
+      ┠─────┼─────┼─────╂─────┼─────┼─────╂─────┼─────┼─────┨
+      ┃  1  │  2  │  3  ┃  4  │  5  │  6  ┃  7  │  8  │  9  ┃
+      ┠─────┼─────┼─────╂─────┼─────┼─────╂─────┼─────┼─────┨
+      ┃  1  │  2  │  3  ┃  4  │  5  │  6  ┃  7  │  8  │  9  ┃
+      ┣━━━━━┿━━━━━┿━━━━━╋━━━━━┿━━━━━┿━━━━━╋━━━━━┿━━━━━┿━━━━━┫
+      ┃  1  │  2  │  3  ┃  4  │  5  │  6  ┃  7  │  8  │  9  ┃
+      ┠─────┼─────┼─────╂─────┼─────┼─────╂─────┼─────┼─────┨
+      ┃  1  │  2  │  3  ┃  4  │  5  │  6  ┃  7  │  8  │  9  ┃
+      ┠─────┼─────┼─────╂─────┼─────┼─────╂─────┼─────┼─────┨
+      ┃  1  │  2  │  3  ┃  4  │  5  │  6  ┃  7  │  8  │  9  ┃
+      ┣━━━━━┿━━━━━┿━━━━━╋━━━━━┿━━━━━┿━━━━━╋━━━━━┿━━━━━┿━━━━━┫
+      ┃  1  │  2  │  3  ┃  4  │  5  │  6  ┃  7  │  8  │  9  ┃
+      ┠─────┼─────┼─────╂─────┼─────┼─────╂─────┼─────┼─────┨
+      ┃  1  │  2  │  3  ┃  4  │  5  │  6  ┃  7  │  8  │  9  ┃
+      ┠─────┼─────┼─────╂─────┼─────┼─────╂─────┼─────┼─────┨
+      ┃  1  │  2  │  3  ┃  4  │  5  │  6  ┃  7  │  8  │  9  ┃
+      ┗━━━━━┷━━━━━┷━━━━━┻━━━━━┷━━━━━┷━━━━━┻━━━━━┷━━━━━┷━━━━━┛
+      */
+    }
+
+    /// <summary>
+    /// Dump the grid to the console.
+    /// </summary>
+    public void ToConsole5()
+    {
+      var upper = "┏━━━━━┯━━━━━┯━━━━━┳━━━━━┯━━━━━┯━━━━━┳━━━━━┯━━━━━┯━━━━━┓";
+      var inner = "┣━━━━━┿━━━━━┿━━━━━╋━━━━━┿━━━━━┿━━━━━╋━━━━━┿━━━━━┿━━━━━┫";
+      var intra = "┠─────┼─────┼─────╂─────┼─────┼─────╂─────┼─────┼─────┨";
+      var lower = "┗━━━━━┷━━━━━┷━━━━━┻━━━━━┷━━━━━┷━━━━━┻━━━━━┷━━━━━┷━━━━━┛";
+
+      void WriteDigit(Digit d)
+      {
+        switch (d.Plurality)
+        {
+          case 0:
+            Console.Write("  ❌  ");
+            break;
+          case 1:
+            Console.Write("  " + d + "  ");
+            break;
+          case 2:
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(" " + string.Join(string.Empty, d.Values) + "  ");
+            break;
+          case 3:
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write(" " + string.Join(string.Empty, d.Values) + " ");
+            break;
+          case 4:
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("" + string.Join(string.Empty, d.Values) + " ");
+            break;
+          case 5:
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("" + string.Join(string.Empty, d.Values) + "");
+            break;
+          default:
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write(" {" + d.Plurality + "} ");
+            break;
+        }
+
+        Console.ResetColor();
+      }
+      void WriteRow(int index)
+      {
+        for (int i = 0; i < 9; i++)
+        {
+          if (i % 3 == 0)
+            Console.Write('┃');
+          else
+            Console.Write('│');
+          WriteDigit(_rows[index][i]);
+        }
+        Console.WriteLine('┃');
+      }
+
+      Console.WriteLine(upper);
+      WriteRow(0);
+      Console.WriteLine(intra);
+      WriteRow(1);
+      Console.WriteLine(intra);
+      WriteRow(2);
+      Console.WriteLine(inner);
+      WriteRow(3);
+      Console.WriteLine(intra);
+      WriteRow(4);
+      Console.WriteLine(intra);
+      WriteRow(5);
+      Console.WriteLine(inner);
+      WriteRow(6);
+      Console.WriteLine(intra);
+      WriteRow(7);
+      Console.WriteLine(intra);
+      WriteRow(8);
+      Console.WriteLine(lower);
 
       /*
       ┏━━━━━┯━━━━━┯━━━━━┳━━━━━┯━━━━━┯━━━━━┳━━━━━┯━━━━━┯━━━━━┓

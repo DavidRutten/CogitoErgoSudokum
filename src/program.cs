@@ -36,7 +36,8 @@ namespace CogitoErgoSudokum
         (8, 6, Digit.CreateAssigned(8))
       );
 
-      Console.Write(grid.ToString());
+      grid.ToConsole5();
+      //Console.Write(grid.ToString());
 
       Console.WriteLine("Press any key to stop.");
       Console.ReadKey();
