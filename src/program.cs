@@ -35,6 +35,7 @@ namespace CogitoErgoSudokum
         (7, 6, Digit.CreateAssigned(2)),
         (8, 6, Digit.CreateAssigned(8))
       );
+      grid = grid.RemoveValuesDueToSingles();
 
       grid.ToConsole5();
       //Console.Write(grid.ToString());

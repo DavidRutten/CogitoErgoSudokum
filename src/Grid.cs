@@ -1,4 +1,9 @@
 using System.Text;
+using System.Collections.Immutable;
+
+using Array = System.Collections.Immutable.ImmutableArray<CogitoErgoSudokum.Cell>;
+using System.Linq.Expressions;
+using System.Data;
 
 namespace CogitoErgoSudokum
 {
@@ -7,80 +12,88 @@ namespace CogitoErgoSudokum
   /// </summary>
   public class Grid
   {
-    private static readonly Digit[] PluralRow =
-    [
-      Digit.FullyPlural, Digit.FullyPlural, Digit.FullyPlural,
-      Digit.FullyPlural, Digit.FullyPlural, Digit.FullyPlural,
-      Digit.FullyPlural, Digit.FullyPlural, Digit.FullyPlural
-    ];
-
-    private readonly Digit[][] _rows =
-    [
-      new Digit[9],
-      new Digit[9],
-      new Digit[9],
-      new Digit[9],
-      new Digit[9],
-      new Digit[9],
-      new Digit[9],
-      new Digit[9],
-      new Digit[9],
-    ];
+    private readonly Array _grid;
 
     /// <summary>
     /// Create a new grid with complete digit plurality.
     /// </summary>
-    public Grid() : this(PluralRow, PluralRow, PluralRow,
-                         PluralRow, PluralRow, PluralRow,
-                         PluralRow, PluralRow, PluralRow)
-    { }
-    private Grid(params Digit[][] rows)
+    public Grid() : this(InitialGrid()) { }
+    private static Array InitialGrid()
     {
-      _rows = rows;
+      var array = ImmutableArray.CreateBuilder<Cell>(9 * 9);
+      for (int r = 1; r <= 9; r++)
+        for (int c = 1; c <= 9; c++)
+          array.Add(new Cell(r, c, Digit.FullyPlural));
+      return array.DrainToImmutable();
+    }
+    private Grid(Array grid)
+    {
+      _grid = grid;
     }
 
     /// <summary>
     /// Gets the digit in the given cell.
     /// </summary>
-    public Digit this[int row, int column]
+    public Cell this[int row, int column]
     {
-      get { return _rows[row - 1][column - 1]; }
-    }
-
-    private Grid WithRow(int rowIdentifier, Digit[] digits)
-    {
-      var array = (Digit[][])_rows.Clone();
-      array[rowIdentifier] = digits;
-      return new Grid(array);
+      get { return _grid[ToLinear(row, column)]; }
     }
 
     /// <summary>
     /// Create a new grid with the given digit in the given location.
     /// </summary>
-    public Grid WithDigit(int rowIndentifier, int colIdentifier, Digit digit)
+    public Grid WithCell(Cell cell)
     {
-      var r = (Digit[])_rows[rowIndentifier - 1].Clone();
-      r[colIdentifier - 1] = digit;
-      return WithRow(rowIndentifier, r);
+      var index = ToLinear(cell.Row, cell.Col);
+      return new Grid(_grid.SetItem(index, cell));
     }
+    /// <summary>
+    /// Create a new grid with the given digit in the given location.
+    /// </summary>
+    public Grid WithCell(int row, int column, Digit digit)
+    {
+      var cell = new Cell(row, column, digit);
+      return WithCell(cell);
+    }
+
     /// <summary>
     /// Create a new grid with the given digits in the given locations.
     /// </summary>
-    public Grid WithDigits(params (int row, int column, Digit digit)[] digits)
+    public Grid WithCells(params Cell[] cells)
     {
-      var mask = new bool[9];
-      for (int i = 0; i < digits.Length; i++)
-        mask[digits[i].row - 1] = true;
+      if (cells is null || cells.Length == 0)
+        return this;
 
-      // We only have to clone those rows containing new digits.
-      var array = (Digit[][])_rows.Clone();
-      for (int i = 0; i < array.Length; i++)
-        array[i] = mask[i] ? (Digit[])array[i].Clone() : array[i];
+      if (cells.Length == 1)
+        return WithCell(cells[0]);
 
-      foreach (var (r, c, d) in digits)
-        array[r - 1][c - 1] = d;
+      var grid = _grid.ToBuilder();
+      foreach (var cell in cells)
+      {
+        var index = ToLinear(cell.Row, cell.Col);
+        grid[index] = cell;
+      }
+      return new Grid(grid.DrainToImmutable());
+    }
 
-      return new Grid(array);
+    /// <summary>
+    /// Remove the values in all plural cells due to hard digits in resolved cells.
+    /// </summary>
+    public Grid RemoveValuesDueToSingles()
+    {
+
+      var grid = _grid.ToBuilder();
+      foreach (var cell in _grid)
+      {
+        var value = cell.Digit.Value;
+        if (value > 0)
+          for (int i = 0; i < grid.Count; i++)
+          {
+            var other = grid[i];
+            if (cell.Row != other.Row || cell.Col != other.Col)
+          }
+      }
+      return new Grid(grid.DrainToImmutable());
     }
 
     public override string ToString()
@@ -300,40 +313,6 @@ namespace CogitoErgoSudokum
       var intra = "┠─────┼─────┼─────╂─────┼─────┼─────╂─────┼─────┼─────┨";
       var lower = "┗━━━━━┷━━━━━┷━━━━━┻━━━━━┷━━━━━┷━━━━━┻━━━━━┷━━━━━┷━━━━━┛";
 
-      void WriteDigit(Digit d)
-      {
-        switch (d.Plurality)
-        {
-          case 0:
-            Console.Write("  ❌  ");
-            break;
-          case 1:
-            Console.Write("  " + d + "  ");
-            break;
-          case 2:
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write(" " + string.Join(string.Empty, d.Values) + "  ");
-            break;
-          case 3:
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write(" " + string.Join(string.Empty, d.Values) + " ");
-            break;
-          case 4:
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("" + string.Join(string.Empty, d.Values) + " ");
-            break;
-          case 5:
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("" + string.Join(string.Empty, d.Values) + "");
-            break;
-          default:
-            Console.ForegroundColor = ConsoleColor.Gray;
-            Console.Write(" {" + d.Plurality + "} ");
-            break;
-        }
-
-        Console.ResetColor();
-      }
       void WriteRow(int index)
       {
         for (int i = 0; i < 9; i++)
@@ -342,7 +321,8 @@ namespace CogitoErgoSudokum
             Console.Write('┃');
           else
             Console.Write('│');
-          WriteDigit(_rows[index][i]);
+
+          Console.Write(_rows[index][i].Format(5));
         }
         Console.WriteLine('┃');
       }

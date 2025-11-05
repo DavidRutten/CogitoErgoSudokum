@@ -1,3 +1,4 @@
+using System.Text;
 
 namespace CogitoErgoSudokum
 {
@@ -91,6 +92,22 @@ namespace CogitoErgoSudokum
     }
 
     /// <summary>
+    /// Gets the value of this digit, or -1 if more than one (or zero)
+    /// possible values remain.
+    /// </summary>
+    public int Value
+    {
+      get
+      {
+        if (Plurality == 1)
+          for (int i = 1; i <= 9; i++)
+            if (Is(i))
+              return i;
+        return -1;
+      }
+    }
+
+    /// <summary>
     /// Gets whether this digit was assigned by the user.
     /// </summary>
     public bool Assigned { get; }
@@ -125,6 +142,53 @@ namespace CogitoErgoSudokum
       }
       else
         return "{" + Plurality + "}";
+    }
+
+    public string Format(int maxCharacters)
+    {
+      var run = Format();
+      while (run.Length < maxCharacters)
+      {
+        if (run.Length % 2 == 0)
+          run = " " + run;
+        else
+          run = run + " ";
+      }
+
+      if (run.Length > maxCharacters)
+      {
+        run = run.Substring(0, maxCharacters - 1);
+        run += "⁺";
+      }
+
+      return run;
+    }
+    private string Format()
+    {
+      switch (Plurality)
+      {
+        case 0: return "❌";
+        case 1: return ToString();
+        default:
+          var sb = new StringBuilder();
+          for (int i = 1; i <= 9; i++)
+            if (Has(i))
+            {
+              switch (i)
+              {
+                case 1: sb.Append('¹'); break;
+                case 2: sb.Append('²'); break;
+                case 3: sb.Append('³'); break;
+                case 4: sb.Append('⁴'); break;
+                case 5: sb.Append('⁵'); break;
+                case 6: sb.Append('⁶'); break;
+                case 7: sb.Append('⁷'); break;
+                case 8: sb.Append('⁸'); break;
+                case 9: sb.Append('⁹'); break;
+              }
+            }
+          return sb.ToString();
+      }
     }
   }
 }
